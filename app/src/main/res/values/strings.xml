@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">AppInspector</string>
+    <string name="title_components">组件详情</string>
+    <string name="search_hint">搜索应用名 / 包名</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_user">三方</string>
+    <string name="filter_system">系统</string>
+    <string name="tab_activity">Activity</string>
+    <string name="tab_service">Service</string>
+    <string name="tab_receiver">Receiver</string>
+    <string name="tab_provider">Provider</string>
+    <string name="copied">已复制</string>
+    <string name="menu_root_check">Root 状态</string>
+    <string name="menu_top_activity">当前界面</string>
+    <string name="menu_export">导出组件清单</string>
+    <string name="loading">加载中…</string>
+    <string name="no_data">无数据</string>
+    <string name="uninstall_hint">提示：常规卸载适用于三方应用；系统应用建议用「禁用」，需要彻底移除再用 Root 静默卸载。卸载前会自动先强制停止目标应用。</string>
+    <string name="menu_restore">恢复系统应用</string>
+</resources>

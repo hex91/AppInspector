@@ -1,0 +1,1 @@
+-keep class com.hex91.appinspector.** { *; }

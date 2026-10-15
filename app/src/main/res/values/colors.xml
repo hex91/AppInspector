@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_500">#FF6750A4</color>
+    <color name="purple_700">#FF4F378B</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="red">#FFE5484D</color>
+    <color name="green">#FF30A46C</color>
+    <color name="orange">#FFE8A33D</color>
+    <color name="bg_page">#FFF7F5FB</color>
+    <color name="card">#FFFFFFFF</color>
+    <color name="text_primary">#FF1A1A1F</color>
+    <color name="text_secondary">#FF6B6B76</color>
+    <color name="divider">#FFE6E3EC</color>
+</resources>
