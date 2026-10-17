@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Android 11+ 需要此权限才能列出全部已安装应用 -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <!-- 常规卸载（唤起系统卸载器）需要 -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
+    <!-- 无 Root 时文件管理器写 /sdcard 需要；运行时引导用户到设置页授权 -->
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <!-- 仅 API 28 设备提取 APK 的兜底路径需要；29+ 走 MediaStore 不需要 -->
     <uses-permission

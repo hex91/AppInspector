@@ -10,6 +10,22 @@
         android:title="预设目录"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_new_dir"
+        android:title="新建目录"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_new_file"
+        android:title="新建文件"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_paste"
+        android:title="粘贴到当前目录"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_grant"
+        android:title="文件访问授权"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_refresh"
         android:title="刷新"
         app:showAsAction="never" />

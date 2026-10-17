@@ -86,20 +86,31 @@
 
 配色通过 `values-night` + `drawable-night` 实现，所有页面（列表、组件、文件浏览）统一适配；已修复 Android 15/16 强制 edge-to-edge 导致的全屏页面与状态栏重叠问题。
 
-### 8. 文件浏览器 + 安装 APK
-菜单 →「文件浏览 / 安装 APK」：
+### 8. 文件管理器 + 安装 APK
+菜单 →「文件浏览 / 安装 APK」，完整文件管理能力：
 
+**浏览**
 - 浏览任意目录，**有 Root 时可进入 `/data/data`、`/data/app`、`/system/app` 等受保护目录**（走 `su -c ls -la`）
 - 预设目录：`/sdcard`、`Download`、`Documents`、`/data/local/tmp`、`/data/app`、`/data/data`、`/system/app`、`/system/priv-app`、`/system/framework`
-- 支持「跳转路径」手动输入任意路径、`..` 返回上级
-- 点击 `.apk` → 安装；长按 → 复制路径 / 查看大小权限时间
+- 「跳转路径」手动输入任意路径、`..` 返回上级
 
-安装方式自动选择：
-| 场景 | 方式 |
+**文件操作**（长按文件 / 目录）
+| 操作 | 说明 |
 |---|---|
-| 单 apk + 无 Root | `ACTION_VIEW` + FileProvider 唤起系统安装器 |
-| 多 apk + Root | `pm install-multiple -r -t` 静默安装 |
-| 多 apk + 无 Root | `PackageInstaller.Session` 一次性提交，系统安装器装全部 split |
+| 复制 / 剪切 + 粘贴 | 长按选「复制」或「剪切」，浏览到目标目录后点菜单「粘贴到当前目录」；同名自动加 `(1)` 序号，剪切粘贴后自动清空剪贴板 |
+| 删除 | 二次确认，目录连同内容一起删，不可恢复 |
+| 新建目录 / 新建文件 | 工具栏菜单，创建在当前目录 |
+| 重命名 | 长按菜单，检测同名冲突 |
+| 复制路径 | 完整路径进系统剪贴板 |
+| 文件信息 | 大小 / 权限 / 修改时间 |
+
+**APK 相关**
+- 点击 `.apk` → 安装；长按 →「APK 信息」：解析应用名、包名、版本、targetSdk/minSdk、四大组件数量、申请权限列表、签名证书 SHA-256（未安装的 apk 文件也能解析，root 下 /data 里的 apk 会自动拷到缓存再解析）
+- 点击 `.apks` / `.apkm` / `.xapk` → 解析合并安装（见第 9 节）
+
+**权限说明**
+- Root 模式下所有操作走 `su -c`（`cp -r` / `mv` / `rm -rf` / `mkdir -p` / `touch`），任意路径可写
+- 无 Root 时工具栏会提示「写入需授权」，点菜单「文件访问授权」授予「所有文件访问」权限后即可操作 `/sdcard` 公共目录
 
 ### 9. Split 安装包：APKS / APKM / XAPK
 针对 App Bundle / 分包安装包的「合并安装 + 拆分导出」：
@@ -188,6 +199,9 @@ app/src/main/java/com/hex91/appinspector/
     ├── SplitArchive.java          APKS / APKM / XAPK 解析解压
     ├── ApkInstaller.java          APK 安装（单包 / install-multiple / Session）
     ├── FileLister.java            目录列举（root ls / File API）
+    ├── FileOps.java               文件操作（复制/移动/删除/新建/重命名，root 自适应）
+    ├── FileClipboard.java         文件剪贴板（复制/剪切的源路径）
+    ├── ApkInfoParser.java         未安装 APK 基础信息解析（包名/版本/组件/权限/签名）
     └── Prefs.java                 主题模式持久化
 ```
 
@@ -202,3 +216,8 @@ app/src/main/java/com/hex91/appinspector/
   - 新增文件浏览器：Root 下可浏览 `/data`、`/system` 等目录，点击即装 APK
   - 新增 APKS / APKM / XAPK 解析合并安装（root `pm install-multiple` 或系统安装器）
   - 新增「导出为 XAPK」：把已安装应用 base + split 重新打包分享
+- v1.4：
+  - 文件浏览器升级为完整文件管理器：复制 / 剪切 / 粘贴 / 删除 / 新建目录 / 新建文件 / 重命名（同名自动加序号，root 与无 root 自适应）
+  - 新增「APK 信息」：解析应用名 / 包名 / 版本 / SDK / 四大组件数量 / 申请权限 / 签名 SHA-256
+  - 新增「文件访问授权」引导：无 Root 时授予「所有文件访问」后即可操作 /sdcard
+  - 工具栏副标题实时显示 Root 状态与剪贴板状态
