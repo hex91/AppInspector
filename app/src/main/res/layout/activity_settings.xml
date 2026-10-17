@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_page"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/purple_500"
+        android:navigationIcon="@android:drawable/ic_menu_revert"
+        android:title="主题设置"
+        android:titleTextColor="#FFFFFF" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="显示模式"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp" />
+
+    <RadioGroup
+        android:id="@+id/rgTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/purple_500"
+            android:padding="10dp"
+            android:text="跟随系统"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/purple_500"
+            android:padding="10dp"
+            android:text="日间模式（浅色）"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/purple_500"
+            android:padding="10dp"
+            android:text="夜间模式（深色）"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:text="说明：选择后立即生效，下次启动保持该设置。跟随系统指随手机系统深色模式切换。"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
+</LinearLayout>

@@ -15,6 +15,7 @@ public class AppInfo {
     public int uid;
     public String sourceDir;        // apk 路径
     public int splitCount;          // split APK 数量（0 表示单包）
+    public java.util.List<String> splitPaths; // split apk 路径列表
     public String installer;        // 安装来源
 
     /** 用于搜索匹配的字符串 */

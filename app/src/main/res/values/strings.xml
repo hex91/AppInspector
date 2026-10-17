@@ -17,4 +17,7 @@
     <string name="no_data">无数据</string>
     <string name="uninstall_hint">提示：常规卸载适用于三方应用；系统应用建议用「禁用」，需要彻底移除再用 Root 静默卸载。卸载前会自动先强制停止目标应用。</string>
     <string name="menu_restore">恢复系统应用</string>
+    <string name="menu_files">文件浏览 / 安装 APK</string>
+    <string name="menu_theme">主题设置</string>
+    <string name="menu_export_xapk">导出为 XAPK（合并安装包）</string>
 </resources>

@@ -29,8 +29,10 @@ import com.hex91.appinspector.model.AppInfo;
 import com.hex91.appinspector.util.ApkExporter;
 import com.hex91.appinspector.util.IconCache;
 import com.hex91.appinspector.util.PkgScanner;
+import com.hex91.appinspector.util.Prefs;
 import com.hex91.appinspector.util.RootShell;
 import com.hex91.appinspector.util.Uninstaller;
+import com.hex91.appinspector.util.XapkExporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +53,15 @@ public class MainActivity extends AppCompatActivity {
     private int filter = 0; // 0 全部 1 三方 2 系统
     private String query = "";
     private boolean rootOk = false;
+    private int appliedTheme = -1;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        appliedTheme = Prefs.themeMode(this);
+        Prefs.applyTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -129,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (id == R.id.action_restore) {
                 Uninstaller.showRestore(MainActivity.this);
+                return true;
+            } else if (id == R.id.action_files) {
+                startActivity(new Intent(MainActivity.this, FileBrowserActivity.class));
+                return true;
+            } else if (id == R.id.action_theme) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 return true;
             }
             return false;
@@ -204,7 +215,8 @@ public class MainActivity extends AppCompatActivity {
                 "Root：清除数据",
                 "应用详情",
                 "卸载 / 移除应用",
-                "提取安装包 (APK) 到 Download"
+                "提取安装包 (APK) 到 Download",
+                "导出为 XAPK（合并 split 安装包）"
         };
         new AlertDialog.Builder(this)
                 .setTitle(info.label)
@@ -265,9 +277,12 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                             break;
-                        case 7:
-                            ApkExporter.export(MainActivity.this, info, null);
-                            break;
+                case 7:
+                    ApkExporter.export(MainActivity.this, info, null);
+                    break;
+                case 8:
+                    XapkExporter.export(MainActivity.this, info, null);
+                    break;
                     }
                 })
                 .show();
@@ -312,6 +327,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // 主题设置页修改后返回时立即生效（AppCompat 一般会自动重建，这里兜底）
+        if (Prefs.themeMode(this) != appliedTheme) {
+            appliedTheme = Prefs.themeMode(this);
+            recreate();
+            return;
+        }
         if (allApps.isEmpty()) return;
         executor.execute(() -> {
             final List<AppInfo> list = PkgScanner.scanApps(MainActivity.this);

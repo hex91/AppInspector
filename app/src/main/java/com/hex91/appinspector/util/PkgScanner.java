@@ -74,6 +74,10 @@ public class PkgScanner {
             a.uid = ai.uid;
             a.sourceDir = ai.sourceDir;
             a.splitCount = ai.splitSourceDirs == null ? 0 : ai.splitSourceDirs.length;
+            if (ai.splitSourceDirs != null) {
+                a.splitPaths = new java.util.ArrayList<>();
+                for (String s : ai.splitSourceDirs) a.splitPaths.add(s);
+            }
             list.add(a);
         }
         Collections.sort(list, new Comparator<AppInfo>() {

@@ -24,6 +24,7 @@ import com.hex91.appinspector.fragment.CompPageFragment;
 import com.hex91.appinspector.model.CompInfo;
 import com.hex91.appinspector.util.DumpCache;
 import com.hex91.appinspector.util.PkgScanner;
+import com.hex91.appinspector.util.Prefs;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,9 +44,12 @@ public class ComponentsActivity extends AppCompatActivity {
 
     private String pkg;
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
+    private int appliedTheme = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        appliedTheme = Prefs.themeMode(this);
+        Prefs.applyTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_components);
 
@@ -167,6 +171,16 @@ public class ComponentsActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 主题设置页修改后返回时立即生效
+        if (Prefs.themeMode(this) != appliedTheme) {
+            appliedTheme = Prefs.themeMode(this);
+            recreate();
+        }
     }
 
     @Override

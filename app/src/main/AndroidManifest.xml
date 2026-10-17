@@ -40,6 +40,18 @@
             android:label="@string/title_components"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/menu_theme"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".FileBrowserActivity"
+            android:exported="false"
+            android:label="@string/menu_files"
+            android:parentActivityName=".MainActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

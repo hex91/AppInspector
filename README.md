@@ -77,6 +77,36 @@
 - 菜单「Root 状态」：检测 `su` 是否可用。
 - 工具栏实时显示 Root 授权状态。
 
+### 7. 主题：日间 / 夜间 / 跟随系统
+菜单 →「主题设置」，三选一，立即生效并记忆：
+
+- **跟随系统**：随手机系统深色模式自动切换
+- **日间模式**：强制浅色
+- **夜间模式**：强制深色
+
+配色通过 `values-night` + `drawable-night` 实现，所有页面（列表、组件、文件浏览）统一适配；已修复 Android 15/16 强制 edge-to-edge 导致的全屏页面与状态栏重叠问题。
+
+### 8. 文件浏览器 + 安装 APK
+菜单 →「文件浏览 / 安装 APK」：
+
+- 浏览任意目录，**有 Root 时可进入 `/data/data`、`/data/app`、`/system/app` 等受保护目录**（走 `su -c ls -la`）
+- 预设目录：`/sdcard`、`Download`、`Documents`、`/data/local/tmp`、`/data/app`、`/data/data`、`/system/app`、`/system/priv-app`、`/system/framework`
+- 支持「跳转路径」手动输入任意路径、`..` 返回上级
+- 点击 `.apk` → 安装；长按 → 复制路径 / 查看大小权限时间
+
+安装方式自动选择：
+| 场景 | 方式 |
+|---|---|
+| 单 apk + 无 Root | `ACTION_VIEW` + FileProvider 唤起系统安装器 |
+| 多 apk + Root | `pm install-multiple -r -t` 静默安装 |
+| 多 apk + 无 Root | `PackageInstaller.Session` 一次性提交，系统安装器装全部 split |
+
+### 9. Split 安装包：APKS / APKM / XAPK
+针对 App Bundle / 分包安装包的「合并安装 + 拆分导出」：
+
+- **合并安装**：文件浏览器点击 `.apks` / `.apkm` / `.xapk`，自动解压出内部全部 `.apk`（base.apk 优先排序），解析 `manifest.json` 显示包名/版本后一键安装
+- **拆分导出**：应用列表长按 →「导出为 XAPK（合并安装包）」，把已安装应用的 `base.apk + split_config.*.apk` 重新打包为 `.xapk`（含 `manifest.json` + `icon.png`）落到 Download，可分享给其它设备用本工具或 SAIO 类工具安装
+
 ## 编译
 
 环境：**JDK 17+**、**Gradle 9.5**、**AGP 9.3.2**、**Android SDK Platform 36 + Build-Tools 36.1.0**
@@ -97,6 +127,8 @@ gradle assembleDebug
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
+
+> 注意：若手机上的旧版签名与当前构建不一致（例如旧包来自其它调试密钥），`adb install -r` 会报 `INSTALL_FAILED_UPDATE_INCOMPATIBLE`，需先 `adb uninstall com.hex91.appinspector` 再装；重装后 KernelSU 的 root 授权需要重新允许一次。
 
 > 已配置 `minSdk 28`（Android 9+）、`targetSdk 36`。
 > `local.properties` 里写死了本机 SDK 路径，换机器需修改或用 Android Studio 自动生成。
@@ -138,8 +170,10 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 app/src/main/java/com/hex91/appinspector/
 ├── MainActivity.java              应用列表页
 ├── ComponentsActivity.java        四大组件容器页（Tab + ViewPager2）
+├── SettingsActivity.java          主题设置（跟随系统 / 日间 / 夜间）
+├── FileBrowserActivity.java       文件浏览器 + APK 安装入口
 ├── fragment/CompPageFragment.java 单类组件列表
-├── adapter/                       列表适配器
+├── adapter/                       列表适配器（AppAdapter / CompAdapter / FileAdapter）
 ├── model/                         AppInfo、CompInfo
 └── util/
     ├── RootShell.java             su 命令执行（带超时、双流读取）
@@ -148,8 +182,13 @@ app/src/main/java/com/hex91/appinspector/
     ├── DumpCache.java             dumpsys 结果缓存
     ├── IconCache.java             图标 LRU 缓存
     ├── Launcher.java              组件启动器（命令构造 + 执行 + 回显）
-    └── Uninstaller.java           卸载器（常规 / pm uninstall / disable / 恢复）
-    └── ApkExporter.java            APK 提取到 Download（root cp / MediaStore / File）
+    ├── Uninstaller.java           卸载器（常规 / pm uninstall / disable / 恢复）
+    ├── ApkExporter.java            APK 提取到 Download（root cp / MediaStore / File）
+    ├── XapkExporter.java          已安装应用反向打包为 .xapk（base + split）
+    ├── SplitArchive.java          APKS / APKM / XAPK 解析解压
+    ├── ApkInstaller.java          APK 安装（单包 / install-multiple / Session）
+    ├── FileLister.java            目录列举（root ls / File API）
+    └── Prefs.java                 主题模式持久化
 ```
 
 ## 版本
@@ -157,3 +196,9 @@ app/src/main/java/com/hex91/appinspector/
 - v1.0：应用列表 + 四大组件 + root 启动器
 - v1.1：新增卸载 / 移除应用（常规 + Root 静默 + 禁用 + 恢复），回到列表自动刷新
 - v1.2：新增长按提取 APK 到 Download 目录
+- v1.3：
+  - 修复 Android 15/16 edge-to-edge 下内容与状态栏重叠（布局 `fitsSystemWindows`）
+  - 新增主题设置：日间 / 夜间 / 跟随系统（`values-night` + DayNight 主题，即时生效）
+  - 新增文件浏览器：Root 下可浏览 `/data`、`/system` 等目录，点击即装 APK
+  - 新增 APKS / APKM / XAPK 解析合并安装（root `pm install-multiple` 或系统安装器）
+  - 新增「导出为 XAPK」：把已安装应用 base + split 重新打包分享
